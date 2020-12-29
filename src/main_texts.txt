@@ -1,0 +1,16 @@
+Open a file that contains various DNA-Sequences separated by a newline, e.g:
+
+ATTTGCGAC
+ATGACGGAC
+CGATCCGAC
+
+The sequences must be:
+
+> the same length
+> stored in plain format (no header, like .FASTA has)
+
+You can also enter the sequences here (DNA or RNA or Proteins, everything...)
+
+Enter BLOSUM degree (number in between 0-100):
+
+LAST
