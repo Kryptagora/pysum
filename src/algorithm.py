@@ -3,6 +3,7 @@ import numpy as np
 from tqdm import tqdm
 import itertools
 
+#np.seterr(all='raise')
 
 def blosum(seq_array:list, xx_matrix:int):
     xx_matrix = 0.85
@@ -18,7 +19,7 @@ def blosum(seq_array:list, xx_matrix:int):
                 seq_array.pop(i)
 
     # array with len(seq_arrays) entrys and these entries are long as one arbitrary sequnce.
-    array = np.empty(shape=(len(seq_array), len(seq_array[1])), dtype=np.str)
+    array = np.empty(shape=(len(seq_array), len(seq_array[0])), dtype=np.str)
 
     #pack sequences in numpy array
     for i in range(len(array)):
@@ -71,9 +72,10 @@ def blosum(seq_array:list, xx_matrix:int):
     print(p_values)
 
     for i, j in np.ndindex(q_matrix.shape):
-        if i == j:
-            log_odds[i, j] = 2*np.log2((q_matrix[i, i])/(p_values[i]**2))
-        else:
-            log_odds[i, j] = 2*np.log2((q_matrix[i, j])/(2*p_values[i]*p_values[j]))
+        with np.errstate(divide='ignore'):
+            if i == j:
+                log_odds[i, j] = 2*np.log2((q_matrix[i, i])/(p_values[i]**2))
+            else:
+                log_odds[i, j] = 2*np.log2((q_matrix[i, j])/(2*p_values[i]*p_values[j]))
 
     return log_odds.round(), seq_letters

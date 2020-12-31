@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
+import numpy as np
 
 from src.theme import theme
 from src.algorithm import blosum
@@ -17,6 +18,8 @@ class Pysum(tk.Frame):
         self.root = tk.Tk()
         self.root.title(title)
         self.root.configure(background='#ecffde')
+        self.root.columnconfigure(0, weight=1)
+        self.root.rowconfigure(1, weight=1)
 
         self.style = ttk.Style()
         self.style.theme_create('bio', settings=theme())
@@ -27,6 +30,7 @@ class Pysum(tk.Frame):
         self.main_text = qopen('src/main_texts.txt').split('\n\n')
 
         self.tabs = ttk.Notebook(self.root, padding=10)
+        self.result_frame = None
 
         self.add_tabs()
         self.add_content_tool()
@@ -35,6 +39,7 @@ class Pysum(tk.Frame):
         self.matrix_result = None
 
         self.root.mainloop()
+
 
     def add_tabs(self):
         self.tool = ttk.Frame(self.tabs)
@@ -53,6 +58,7 @@ class Pysum(tk.Frame):
 
     def add_content_tool(self):
         tool_frame = ttk.LabelFrame(self.tool, text="File Structure", padding=50, relief=tk.RIDGE)
+
         tool_frame.grid(row=0, column=0, sticky=tk.E + tk.W + tk.N + tk.S)
 
         tf_l1 = ttk.Label(tool_frame, text=self.main_text[0], font=self.font_1)
@@ -92,7 +98,34 @@ class Pysum(tk.Frame):
         tf_start_calc.grid(row=2, column=2, sticky="news")
 
 
+    def add_content_result(self):
+        assert self.matrix_result is not None
+        if self.result_frame is not None:
+            #dynamicly resize window
+            self.result_frame.destroy()
+
+        self.result_frame = ttk.LabelFrame(self.results, text="Matrix Representation", padding=50, relief=tk.RIDGE)
+        self.result_frame.grid(row=0, column=0, sticky=tk.E + tk.W + tk.N + tk.S)
+
+        for (row, col), value in np.ndenumerate(self.matrix_result):
+            if row == 0:
+                ttk.Label(self.result_frame, text=str(self.matrix_labels[col]), font=self.font_1).grid(row=row, column=col+1)
+
+            if col == 0:
+                ttk.Label(self.result_frame, text=str(self.matrix_labels[row]), font=self.font_1).grid(row=row+1, column=col)
+
+            _ = ttk.Entry(self.result_frame, width=10, font=self.font_2)
+            _.insert(tk.END, str(value))
+            _.grid(row=row+1, column=col+1)
+            _.configure(state="readonly")
+
         # ---
+        out_res_frame = ttk.LabelFrame(self.results, text="Matrix Representation", padding=50, relief=tk.RIDGE)
+        out_res_frame.grid(row=1, column=0, sticky=tk.E + tk.W + tk.N + tk.S)
+        #TODO
+        # print to console
+        # print to file
+        # export as csv (maybe)
 
 
 
@@ -140,19 +173,28 @@ class Pysum(tk.Frame):
             else:
                 dna_sequences.append(line)
 
-        self.matrix_result, self.matrix_labels = blosum(dna_sequences, xx_number)
+        try:
+            self.matrix_result, self.matrix_labels = blosum(dna_sequences, xx_number)
+        except:
+            self.warn(mode='something', line=i)
+            return False
+
+        self.add_content_result()
+        self.tabs.select([1])
         print(self.matrix_result)
 
     def warn(self, mode:str, line:int=0):
         warn_msg = tk.StringVar()
         if mode == 'len':
-            warn_msg.set(f'[WARNING] Sequence nr.{line} differs in lenght!')
+            warn_msg.set(f'[WARNING] Sequence nr.{line+1} differs in lenght!')
         elif mode == 'empty':
             warn_msg.set(f'[WARNING] At least 2 Sequences must be given!')
         elif mode == 'xnumrange':
             warn_msg.set(f'[WARNING] BLOSUM Degree must be between 1-100!')
         elif mode == 'xnuminvalid':
             warn_msg.set(f'[WARNING] BLOSUM Degree must be a number!')
+        elif mode == 'something':
+            warn_msg.set(f'[WARNING] BLOSUM cant be computed with that sequences!')
         else:
             warn_msg.set(f'[WARNING] This will never happen.')
 
