@@ -1,6 +1,5 @@
 import difflib
 import numpy as np
-from tqdm import tqdm
 import itertools
 
 #np.seterr(all='raise')
@@ -9,7 +8,7 @@ def blosum(seq_array:list, xx_matrix:int):
     xx_matrix = 0.85
 
     # elimination of similar sequnces
-    for ignore_index, seq_1 in enumerate(tqdm(seq_array)):
+    for ignore_index, seq_1 in enumerate(seq_array):
         for i, seq_2 in enumerate(seq_array, 0):
             if ignore_index == i:
                 continue
@@ -69,7 +68,6 @@ def blosum(seq_array:list, xx_matrix:int):
         idx += 1
 
     log_odds = np.zeros(shape=(c_matrix.shape), dtype=np.float64)
-    print(p_values)
 
     for i, j in np.ndindex(q_matrix.shape):
         with np.errstate(divide='ignore'):
@@ -78,4 +76,12 @@ def blosum(seq_array:list, xx_matrix:int):
             else:
                 log_odds[i, j] = 2*np.log2((q_matrix[i, j])/(2*p_values[i]*p_values[j]))
 
-    return log_odds.round(), seq_letters
+    str_log_odds = np.zeros(shape=log_odds.shape, dtype=object)
+    for (i, j), value in np.ndenumerate(log_odds.round()):
+        if value == np.NINF:
+            str_log_odds[i][j] = '-inf'
+        else:
+            str_log_odds[i][j] = str(int(value))
+
+    #return log_odds.round(), seq_letters
+    return str_log_odds, seq_letters

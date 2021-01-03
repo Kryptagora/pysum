@@ -34,6 +34,7 @@ class Pysum(tk.Frame):
 
         self.add_tabs()
         self.add_content_tool()
+        self.add_content_about()
 
         self.matrix_labels = None
         self.matrix_result = None
@@ -56,7 +57,9 @@ class Pysum(tk.Frame):
 
         self.tabs.grid(row=0, column=0)
 
+
     def add_content_tool(self):
+        '''Adds all content to the tool tab'''
         tool_frame = ttk.LabelFrame(self.tool, text="File Structure", padding=50, relief=tk.RIDGE)
 
         tool_frame.grid(row=0, column=0, sticky=tk.E + tk.W + tk.N + tk.S)
@@ -99,9 +102,10 @@ class Pysum(tk.Frame):
 
 
     def add_content_result(self):
+        '''Adds all content to the result tab, when calculate is called'''
         assert self.matrix_result is not None
         if self.result_frame is not None:
-            #dynamicly resize window
+            # dynamicly resize window
             self.result_frame.destroy()
 
         self.result_frame = ttk.LabelFrame(self.results, text="Matrix Representation", padding=50, relief=tk.RIDGE)
@@ -112,7 +116,7 @@ class Pysum(tk.Frame):
                 ttk.Label(self.result_frame, text=str(self.matrix_labels[col]), font=self.font_1).grid(row=row, column=col+1)
 
             if col == 0:
-                ttk.Label(self.result_frame, text=str(self.matrix_labels[row]), font=self.font_1).grid(row=row+1, column=col)
+                ttk.Label(self.result_frame, width=2, text=str(self.matrix_labels[row]), font=self.font_1).grid(row=row+1, column=col)
 
             _ = ttk.Entry(self.result_frame, width=10, font=self.font_2)
             _.insert(tk.END, str(value))
@@ -120,13 +124,39 @@ class Pysum(tk.Frame):
             _.configure(state="readonly")
 
         # ---
-        out_res_frame = ttk.LabelFrame(self.results, text="Matrix Representation", padding=50, relief=tk.RIDGE)
+        out_res_frame = ttk.LabelFrame(self.results, text="Output Settings", padding=50, relief=tk.RIDGE)
         out_res_frame.grid(row=1, column=0, sticky=tk.E + tk.W + tk.N + tk.S)
+
+        out_res_printtoconsole = ttk.Button(out_res_frame, text="Print to console", command=self.print_res_console)
+        out_res_printtoconsole.grid(row=0, column=0, sticky="w")
         #TODO
-        # print to console
-        # print to file
+        # print to file (numpy.savetxt saves an array to a text file.)
         # export as csv (maybe)
 
+
+    def add_content_about(self):
+        # todo only extract text via regex from readme or format text based on line start ##
+        ab_frame = ttk.LabelFrame(self.about, text='About this program', relief=tk.RIDGE)
+        ab_frame.grid(row=0, column=0, sticky=tk.E + tk.W + tk.N + tk.S)
+
+        with open('README.md', 'r') as fh:
+            about = fh.read()
+
+        ab_text = tk.Text(ab_frame, height=20, width=80)
+        ab_text.grid(row=0, column=0, columnspan=2)
+        ab_text.insert(tk.END, about)
+        ab_text.config(state='disabled')
+
+
+    def print_res_console(self):
+        label_matrix = self.matrix_result.astype('str')
+        label2 = self.matrix_labels
+        label2 = np.asarray(['-'] + label2).reshape((len(label2)+1, 1))
+
+        label_matrix = np.vstack((self.matrix_labels, label_matrix))
+        label_matrix = np.hstack((label2, label_matrix))
+        print(f'BLOSUM{self.xx_textin.get("1.0", "end-1c").rstrip()} Matrix:')
+        print('\n'.join([''.join(['{:8}'.format(item) for item in row]) for row in label_matrix]))
 
 
     def tf_open_file(self):
@@ -181,7 +211,7 @@ class Pysum(tk.Frame):
 
         self.add_content_result()
         self.tabs.select([1])
-        print(self.matrix_result)
+
 
     def warn(self, mode:str, line:int=0):
         warn_msg = tk.StringVar()
