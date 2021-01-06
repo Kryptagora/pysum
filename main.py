@@ -4,7 +4,7 @@ from tkinter import ttk
 
 from interface import Pysum
 
-_version_ = '0.3.0'
+_version_ = '0.4.0'
 
 if __name__ == "__main__":
     print(f'Welcome to PYSUM v{_version_}!')

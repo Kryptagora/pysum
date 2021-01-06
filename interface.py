@@ -124,13 +124,22 @@ class Pysum(tk.Frame):
             _.configure(state="readonly")
 
         # ---
+        degree_frame = ttk.LabelFrame(self.results, text="BLOSUM Degree", padding=50, relief=tk.RIDGE)
+        degree_frame.grid(row=0, column=1, sticky=tk.E + tk.W + tk.N + tk.S)
+
+        ttk.Label(degree_frame, text=str(self.xx_textin.get("1.0", "end-1c").rstrip()), font=('consolas', 30, 'bold')).grid(row=0, column=0, sticky="news")
+
+
+        # ---
         out_res_frame = ttk.LabelFrame(self.results, text="Output Settings", padding=50, relief=tk.RIDGE)
         out_res_frame.grid(row=1, column=0, sticky=tk.E + tk.W + tk.N + tk.S)
 
-        out_res_printtoconsole = ttk.Button(out_res_frame, text="Print to console", command=self.print_res_console)
+        out_res_printtoconsole = ttk.Button(out_res_frame, text="Print to console", command=self.print_res_console_save)
         out_res_printtoconsole.grid(row=0, column=0, sticky="w")
+
+        out_res_printtoconsole = ttk.Button(out_res_frame, text="Save to file", command=lambda: self.print_res_console_save(save_file=True))
+        out_res_printtoconsole.grid(row=0, column=2, sticky="w")
         #TODO
-        # print to file (numpy.savetxt saves an array to a text file.)
         # export as csv (maybe)
 
 
@@ -148,16 +157,24 @@ class Pysum(tk.Frame):
         ab_text.config(state='disabled')
 
 
-    def print_res_console(self):
+    def print_res_console_save(self, save_file=False):
         label_matrix = self.matrix_result.astype('str')
         label2 = self.matrix_labels
         label2 = np.asarray(['-'] + label2).reshape((len(label2)+1, 1))
 
         label_matrix = np.vstack((self.matrix_labels, label_matrix))
         label_matrix = np.hstack((label2, label_matrix))
-        print(f'BLOSUM{self.xx_textin.get("1.0", "end-1c").rstrip()} Matrix:')
-        print('\n'.join([''.join(['{:8}'.format(item) for item in row]) for row in label_matrix]))
 
+        header_str = f'BLOSUM{self.xx_textin.get("1.0", "end-1c").rstrip()} Matrix:'
+        result_str = '\n'.join([''.join(['{:8}'.format(item) for item in row]) for row in label_matrix])
+
+        if save_file:
+            file = filedialog.asksaveasfile(mode='w', defaultextension=".txt")
+            file.write(header_str + "\n" + result_str)
+            file.close()
+
+        else:
+            print(header_str + "\n" + result_str)
 
     def tf_open_file(self):
         tf_filename = filedialog.askopenfilename(initialdir="/home/amon/Desktop", title="Select Text File", filetypes=
