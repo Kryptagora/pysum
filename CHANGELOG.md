@@ -1,7 +1,23 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+## [Released]
+
+## [1.1.0] - 2021-01-08
+### Added
+- Finalized README.md
+- README.md parser for About tab.
+- Render images (button) via Latex-URL encoding.
+- Various Optimizations and code cleanup.
+
+### Changed
+- Font changed to be more readable.
+- Better Result tab with centered entry's.
+- Tested on Windows10.
+- Organized File structure.
+
+### Removed
+- Settings Tab.
 
 ## [Unreleased]
 
@@ -15,11 +31,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [0.3.0] - 2021-01-03
 ### Added
-- Various Bug-fixes, and input checking
-- Unfinished README.md
+- Various Bug-fixes, and input checking.
+- Unfinished README.md.
 
 ### Removed
-- Static window resizing
+- Static window resizing.
 
 ## [0.1.0] - 2020-12-27
 ### Added

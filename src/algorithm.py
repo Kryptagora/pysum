@@ -38,8 +38,6 @@ def blosum(seq_array:list, xx_matrix:int):
         counts[c] = 0
 
     for i in range(len(array[0])):
-        #print(len(list(itertools.combinations(''.join(array[:, 0]),2))))
-        #print(array[:, i])
         for p in itertools.combinations(array[:, i], 2):
             combination = ''.join(p)
             if combination != combination[::-1]:

@@ -29,6 +29,7 @@ theme_content = {
         "configure": {
             "background": '#ecffde', # Color of non selected tab-button
             "padding": [5, 2], # [space beetwen text and horizontal tab-button border, space between text and vertical tab_button border]
+            "focuscolor": '#c2ff9b' # remove grey dotted selection square
         },
         "map": {
             "background": [("selected", '#c2ff9b')], # Color of active tab

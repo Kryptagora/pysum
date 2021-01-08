@@ -1,10 +1,15 @@
 import tkinter as tk
 from tkinter import filedialog
+from urllib.request import urlopen
 from tkinter import ttk
 import numpy as np
+import base64
+import io
+import re
 
 from src.theme import theme
 from src.algorithm import blosum
+from src.utils import RichText
 
 def qopen(path:str):
     '''Opens and returns file content'''
@@ -25,19 +30,20 @@ class Pysum(tk.Frame):
         self.style.theme_create('bio', settings=theme())
         self.style.theme_use('bio')
 
-        self.font_1 = ('consolas', 10, 'bold')
-        self.font_2 = ('consolas', 10)
+        self.font_1 = ('Helvetica', 10, 'bold')
+        self.font_2 = ('Helvetica', 10)
         self.main_text = qopen('src/main_texts.txt').split('\n\n')
 
         self.tabs = ttk.Notebook(self.root, padding=10)
         self.result_frame = None
 
-        self.add_tabs()
-        self.add_content_tool()
-        self.add_content_about()
-
         self.matrix_labels = None
         self.matrix_result = None
+
+        self.add_tabs()
+        self.add_content_tool()
+        self.add_content_result()
+        self.add_content_about()
 
         self.root.mainloop()
 
@@ -48,9 +54,6 @@ class Pysum(tk.Frame):
 
         self.results = ttk.Frame(self.tabs)
         self.tabs.add(self.results, text=' Results ')
-
-        self.settings = ttk.Frame(self.tabs)
-        self.tabs.add(self.settings, text=' Settings ')
 
         self.about = ttk.Frame(self.tabs)
         self.tabs.add(self.about, text=' About ')
@@ -103,13 +106,16 @@ class Pysum(tk.Frame):
 
     def add_content_result(self):
         '''Adds all content to the result tab, when calculate is called'''
-        assert self.matrix_result is not None
         if self.result_frame is not None:
             # dynamicly resize window
             self.result_frame.destroy()
 
         self.result_frame = ttk.LabelFrame(self.results, text="Matrix Representation", padding=50, relief=tk.RIDGE)
         self.result_frame.grid(row=0, column=0, sticky=tk.E + tk.W + tk.N + tk.S)
+
+        if self.matrix_result is None:
+            ttk.Label(self.result_frame, text="No result available.", font=self.font_2).grid(row=0, column=0, sticky="w")
+            return
 
         for (row, col), value in np.ndenumerate(self.matrix_result):
             if row == 0:
@@ -118,7 +124,7 @@ class Pysum(tk.Frame):
             if col == 0:
                 ttk.Label(self.result_frame, width=2, text=str(self.matrix_labels[row]), font=self.font_1).grid(row=row+1, column=col)
 
-            _ = ttk.Entry(self.result_frame, width=10, font=self.font_2)
+            _ = ttk.Entry(self.result_frame, width=8, font=self.font_2, justify='center')
             _.insert(tk.END, str(value))
             _.grid(row=row+1, column=col+1)
             _.configure(state="readonly")
@@ -139,22 +145,61 @@ class Pysum(tk.Frame):
 
         out_res_printtoconsole = ttk.Button(out_res_frame, text="Save to file", command=lambda: self.print_res_console_save(save_file=True))
         out_res_printtoconsole.grid(row=0, column=2, sticky="w")
-        #TODO
-        # export as csv (maybe)
 
 
-    def add_content_about(self):
-        # todo only extract text via regex from readme or format text based on line start ##
-        ab_frame = ttk.LabelFrame(self.about, text='About this program', relief=tk.RIDGE)
-        ab_frame.grid(row=0, column=0, sticky=tk.E + tk.W + tk.N + tk.S)
+    def add_content_about(self, renderimg=False):
+        if renderimg and self.ab_frame is not None:
+            self.ab_frame.destroy()
+            self.render_about.destroy()
+
+        if not renderimg:
+            self.render_about = ttk.Button(self.about, text="RENDER IMAGES", command=lambda: self.add_content_about(True))
+            self.render_about.grid(row=0, column=0, sticky="e")
+
+        # This functions as README.md parser in combination witch the class RichText
+        self.ab_frame = ttk.LabelFrame(self.about, text='About this program', relief=tk.RIDGE)
+        self.ab_frame.grid(row=(0 if renderimg else 1), column=0, sticky=tk.E + tk.W + tk.N + tk.S)
+        self.images = [] # need to store reference because of tkinter
 
         with open('README.md', 'r') as fh:
-            about = fh.read()
+            about = fh.readlines()
 
-        ab_text = tk.Text(ab_frame, height=20, width=80)
-        ab_text.grid(row=0, column=0, columnspan=2)
-        ab_text.insert(tk.END, about)
-        ab_text.config(state='disabled')
+        ab_text = RichText(self.ab_frame)
+        ab_text.grid(row=0, column=0)
+
+        for line in about:
+            line = line.replace('\\', '')
+            line = line.replace('**', '')
+            line = line.replace('```', '')
+            # title of the readme
+            if line.startswith('##'):
+                ab_text.insert("end", line[3:], "h1")
+            elif line.startswith('#'):
+                ab_text.insert("end", 'PYSUM\n', "h1")
+
+            #extract the url in parentheis and insert image
+            elif line.startswith('!'):
+                if renderimg:
+                    image_url = line.split('(')[1].split(')')[0]
+                    image_url = image_url.replace('svg', 'gif').replace('dpi%7B300', 'dpi%7B200')
+                    image_byt = urlopen(image_url).read()
+                    image_b64 = base64.encodestring(image_byt)
+                    photo = tk.PhotoImage(data=image_b64)
+                    ab_text.image_create(tk.END, image = photo)
+                    ab_text.insert('end', '\n')
+                    self.images.append(photo)
+                else:
+                    ab_text.insert('end', '\n[NOT RENDERED YET, click on above button!]\n\n')
+
+            # draw bulletpoints
+            elif re.match(r'^[1-9]',line) or line.startswith('*'):
+                ab_text.insert_bullet('end', line.split(' ', 1)[1])
+
+            else:
+                ab_text.insert("end", line)
+
+        ab_text.configure(state='disabled')
+        return True
 
 
     def print_res_console_save(self, save_file=False):
@@ -170,11 +215,14 @@ class Pysum(tk.Frame):
 
         if save_file:
             file = filedialog.asksaveasfile(mode='w', defaultextension=".txt")
+            if file is None:
+                return False
             file.write(header_str + "\n" + result_str)
             file.close()
 
         else:
             print(header_str + "\n" + result_str)
+
 
     def tf_open_file(self):
         tf_filename = filedialog.askopenfilename(initialdir="/home/amon/Desktop", title="Select Text File", filetypes=
@@ -186,12 +234,13 @@ class Pysum(tk.Frame):
 
         self.tf_textin.delete("1.0", tk.END)
         #self.tf_textin.insert(tk.END, tf_text)
-        self.tf_textin.insert(tk.END, f'--File sucessfully loaded: {len(tf_text.splitlines())} sequences found.--\n'+tf_text)
+        self.tf_textin.insert(tk.END, f'--File sucessfully loaded: {len(tf_text.splitlines())} sequences found.--\n'+tf_text.replace(' ', ''))
+
 
     def check_input_and_pass(self):
         dna_sequences = []
         initial_len = None
-        xx_number = self.xx_textin.get("1.0", "end-1c").rstrip()
+        xx_number = self.xx_textin.get("1.0", "end-1c").rstrip().replace(' ', '')
         # first check xx_blosum value
         try:
             xx_number = int(xx_number)
@@ -202,7 +251,7 @@ class Pysum(tk.Frame):
             self.warn(mode='xnuminvalid')
             return False
 
-        seq_string = self.tf_textin.get("1.0", tk.END).rstrip()
+        seq_string = self.tf_textin.get("1.0", tk.END).rstrip().replace(' ', '')
         if len(seq_string.splitlines()) < 2:
             self.warn(mode='empty')
             return False
