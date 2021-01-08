@@ -1,5 +1,27 @@
 # :blossom: PYSUM :blossom:
-This Tool calculates a **BLOSUM** Matrix (log-odds ratios) given arbitrary Sequences (can be anything, not only DNA or Amino-Acid) by **elimination**. This is accomplished by following mathematical foundation:
+This Tool calculates a **BLOSUM** Matrix (log-odds ratios) given arbitrary Sequences (can be anything, not only DNA or Amino-Acid) by **elimination**.
+
+## Usage
+To run this application, go to the folder where the `main.py` is located and open the command prompt in it. Then run the application by typing:
+`python3 main.py`
+
+[**TBA**] You can also run this application without a GUI, by typing:
+`python3 main.py --nogui --path path_to_sequnce_file --degree [0,100]`
+
+## Requirements
+To execute this application, `python3` is required. \
+Also, following python packages are required:
+
+| package  | version |
+| -------  | ------- |
+| numpy    | >= 1.18 |
+| tkinter  | >= 8.6  |
+
+
+Note that `tkinter` is installed by default on `Windows10`, but not on `Linux`.
+
+## Mathematical Foundation
+This is accomplished by following mathematical foundation:
 
 1. Given Sequences with at least p% identity to each other are clustered. The other sequences are **eliminated** (The degree decides, how similar they must be).
 
@@ -10,7 +32,7 @@ This Tool calculates a **BLOSUM** Matrix (log-odds ratios) given arbitrary Seque
 The columns k are observed, such that
 ![equation](https://latex.codecogs.com/svg.latex?%5Cdpi%7B300%7D%20k_1)
 would be then `ATG` and so on.  By computing the **C values** a matrix is obtained:\
-![equation](https://latex.codecogs.com/svg.latex?%5Cdpi%7B300%7D%20c_%7Bi%2C%20j%7D%5E%7Bk%7D%3D%5Cleft%5C%7B%5Cbegin%7Barray%7D%7Bll%7D%20%5Cleft%28%5Cbegin%7Barray%7D%7Bc%7D%20n_%7Bi%7D%5E%7Bk%7D%20%5C%5C%202%20%5Cend%7Barray%7D%5Cright%29%20%26%20%5Ctext%20%7B%20for%20%7D%20i%3Dj%20%5C%5C%20n_%7Bi%7D%5E%7Bk%7D%20n_%7Bj%7D%5E%7Bk%7D%20%26%20%5Ctext%20%7B%20for%20%7D%20i%3Ej%20%5Cend%7Barray%7D%5Cright.)
+![equation](https://latex.codecogs.com/svg.latex?%5Cdpi%7B300%7D%20c_%7Bi%2C%20j%7D%5E%7Bk%7D%3D%5Cleft%5C%7B%5Cbegin%7Barray%7D%7Bll%7D%20%5Cleft%28%5Cbegin%7Barray%7D%7Bc%7D%20n_%7Bi%7D%5E%7Bk%7D%20%5C%5C%202%20%5Cend%7Barray%7D%5Cright%29%20%26%20%5Ctext%20%7B%20for%20%7D%20i%3Dj%20%5C%5C%20n_%7Bi%7D%5E%7Bk%7D%20n_%7Bj%7D%5E%7Bk%7D%20%26%20%5Ctext%20%7B%20for%20%7D%20i%3Ej%20%5Cend%7Barray%7D%5Cright.)\
 Note that this matrix is Symmetric.
 
 3. The sum of all entry's in the Matrix and Z (normalization factor) is given by:  
@@ -30,25 +52,6 @@ is normalized to obtain the **Q-Matrix**:\
 The result (every entry) is rounded to integers.
 
 This calculation is based on Dr. Sepp Hochreiters Script `Bioinformatics I` .
-
-## Usage
-To execute this application, `python3` is required. \
-Also, following python packages are required:
-
-| package  | version |
-| -------  | ------- |
-| numpy    | <= 1.18 |
-| tkinter  | <= 8.6  |
-
-
-Note that `tkinter` is installed by default on `Windows10`, but not on `Linux`.
-
-To run this application, go to the folder where the `main.py` is located and open the command prompt in it. Then run the application by typing:
-`python3 main.py`
-
-You can also run this application without a GUI, by typing:
-`python3 main.py --nogui --path path_to_sequnce_file --degree [0,100]`
-
 
 ## Input Files
 The Input file can end with any extension.
