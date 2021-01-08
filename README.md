@@ -9,7 +9,7 @@ This Tool calculates a **BLOSUM** Matrix (log-odds ratios) given arbitrary Seque
 `GTACGACC`\
 The columns k are observed, such that
 ![equation](https://latex.codecogs.com/svg.latex?%5Cdpi%7B300%7D%20k_1)
-would be then `ATG` and so on.  By computing the **C values** a matrix is obtained:
+would be then `ATG` and so on.  By computing the **C values** a matrix is obtained:\
 ![equation](https://latex.codecogs.com/svg.latex?%5Cdpi%7B300%7D%20c_%7Bi%2C%20j%7D%5E%7Bk%7D%3D%5Cleft%5C%7B%5Cbegin%7Barray%7D%7Bll%7D%20%5Cleft%28%5Cbegin%7Barray%7D%7Bc%7D%20n_%7Bi%7D%5E%7Bk%7D%20%5C%5C%202%20%5Cend%7Barray%7D%5Cright%29%20%26%20%5Ctext%20%7B%20for%20%7D%20i%3Dj%20%5C%5C%20n_%7Bi%7D%5E%7Bk%7D%20n_%7Bj%7D%5E%7Bk%7D%20%26%20%5Ctext%20%7B%20for%20%7D%20i%3Ej%20%5Cend%7Barray%7D%5Cright.)
 Note that this matrix is Symmetric.
 
@@ -17,9 +17,9 @@ Note that this matrix is Symmetric.
 ![equation](https://latex.codecogs.com/svg.latex?%5Cdpi%7B300%7D%20c_%7Bi%2C%20j%7D%3D%5Csum_%7Bk%7D%20c_%7Bi%2C%20j%7D%5E%7Bk%7D%20%5Ctext%7B%20and%20%7D%20Z%3D%5Csum_%7Bi%20%5Cgeq%20j%7D%20c_%7Bi%2C%20j%7D%3D%5Cfrac%7BL%20N%28N-1%29%7D%7B2%7D)\
 where *L* is the sequence length (column number, i.e. for `ATGTACGT`: L = 8) and N the number of sequences.
 
-4. Then, \
+4. Then,
 ![equation](https://latex.codecogs.com/svg.latex?%5Cdpi%7B300%7D%20c_{i,j})
-is normalized to obtain the **Q-Matrix**: 
+is normalized to obtain the **Q-Matrix**:\
 ![equation](https://latex.codecogs.com/svg.latex?%5Cdpi%7B300%7D%20q_%7Bi%2C%20j%7D%3D%5Cfrac%7Bc_%7Bi%2C%20j%7D%7D%7BZ%7D)
 
 5. To obtain the probability of the occurrence of one sequence letter **i** use:\
