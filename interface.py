@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog
 from urllib.request import urlopen
+from pathlib import Path
 from tkinter import ttk
 import numpy as np
 import base64
@@ -214,7 +215,7 @@ class Pysum(tk.Frame):
         result_str = '\n'.join([''.join(['{:8}'.format(item) for item in row]) for row in label_matrix])
 
         if save_file:
-            file = filedialog.asksaveasfile(mode='w', defaultextension=".txt")
+            file = filedialog.asksaveasfile(initialdir=str(Path.home()), mode='w', defaultextension=".txt")
             if file is None:
                 return False
             file.write(header_str + "\n" + result_str)
@@ -225,7 +226,7 @@ class Pysum(tk.Frame):
 
 
     def tf_open_file(self):
-        tf_filename = filedialog.askopenfilename(initialdir="/home/amon/Desktop", title="Select Text File", filetypes=
+        tf_filename = filedialog.askopenfilename(initialdir=str(Path.home()), title="Select Text File", filetypes=
             (("txt files", "*.txt"), ("all files", "*.*")))
         if len(tf_filename) == 0:
             return False
