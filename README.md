@@ -62,7 +62,7 @@ The sequences in the input file should fulfill following propertys:
 * Any input line starting with `-` will be ignored.
 
 Examples:
-**Valid** ✅
+**Valid** :heavy_check_mark:
 ```
 -This is a valid input file, this line is ignored.
 TACGTAGCTAGC
@@ -71,7 +71,7 @@ TGCTGCTGCCCA
 TGTGTACACCCC
 -This line is also ignored.
 ```
-**Not Valid** ⛔️
+**Not Valid** :x:
 ```
 -This is a invalid input file, because sequences differ in length.
 TACGTAGCTAGC

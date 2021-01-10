@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Released]
 
+## [1.1.2] - 2021-01-10
+### Changed
+- README.md Hotfix (Emojis cant be rendered on some OS in the program).
+- No connection exception catch in About (Render images).
+
 ## [1.1.0] - 2021-01-08
 ### Added
 - Finalized README.md

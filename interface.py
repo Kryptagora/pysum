@@ -183,12 +183,16 @@ class Pysum(tk.Frame):
                 if renderimg:
                     image_url = line.split('(')[1].split(')')[0]
                     image_url = image_url.replace('svg', 'gif').replace('dpi%7B300', 'dpi%7B200')
-                    image_byt = urlopen(image_url).read()
-                    image_b64 = base64.encodestring(image_byt)
-                    photo = tk.PhotoImage(data=image_b64)
-                    ab_text.image_create(tk.END, image = photo)
-                    ab_text.insert('end', '\n')
-                    self.images.append(photo)
+                    try:
+                        image_byt = urlopen(image_url).read()
+                        image_b64 = base64.encodestring(image_byt)
+                        photo = tk.PhotoImage(data=image_b64)
+                        ab_text.image_create(tk.END, image = photo)
+                        ab_text.insert('end', '\n')
+                        self.images.append(photo)
+                    except:
+                        self.warn(mode='badinternet', label_loc=self.about, row=2, col=0)
+                    
                 else:
                     ab_text.insert('end', '\n[NOT RENDERED YET, click on above button!]\n\n')
 
@@ -246,15 +250,15 @@ class Pysum(tk.Frame):
         try:
             xx_number = int(xx_number)
             if not xx_number in range(0, 101):
-                self.warn(mode='xnumrange')
+                self.warn(mode='xnumrange', label_loc=self.tool)
                 return False
         except:
-            self.warn(mode='xnuminvalid')
+            self.warn(mode='xnuminvalid', label_loc=self.tool)
             return False
 
         seq_string = self.tf_textin.get("1.0", tk.END).rstrip().replace(' ', '')
         if len(seq_string.splitlines()) < 2:
-            self.warn(mode='empty')
+            self.warn(mode='empty', label_loc=self.tool)
             return False
 
         for i, line in enumerate(seq_string.upper().splitlines()):
@@ -265,7 +269,7 @@ class Pysum(tk.Frame):
                 initial_len = len(line)
 
             if initial_len != len(line):
-                self.warn(mode='len', line=i)
+                self.warn(mode='len', line=i, label_loc=self.tool)
                 return False
             else:
                 dna_sequences.append(line)
@@ -273,14 +277,14 @@ class Pysum(tk.Frame):
         try:
             self.matrix_result, self.matrix_labels = blosum(dna_sequences, xx_number)
         except:
-            self.warn(mode='something', line=i)
+            self.warn(mode='something', line=i, label_loc=self.tool)
             return False
 
         self.add_content_result()
         self.tabs.select([1])
 
 
-    def warn(self, mode:str, line:int=0):
+    def warn(self, mode:str, line:int=0, label_loc=None, row=2, col=0):
         warn_msg = tk.StringVar()
         if mode == 'len':
             warn_msg.set(f'[WARNING] Sequence nr.{line+1} differs in lenght!')
@@ -292,9 +296,11 @@ class Pysum(tk.Frame):
             warn_msg.set(f'[WARNING] BLOSUM Degree must be a number!')
         elif mode == 'something':
             warn_msg.set(f'[WARNING] BLOSUM cant be computed with that sequences!')
+        elif mode== 'badinternet':
+            warn_msg.set(f'[WARNING] Internet connection is reqired!')
         else:
             warn_msg.set(f'[WARNING] This will never happen.')
 
-        warning_label = tk.Label(self.tool, textvariable=warn_msg, font=self.font_1, fg="red", bg='#ecffde')
-        warning_label.grid(row=2, column=0, pady=5, sticky="w")
+        warning_label = tk.Label(label_loc, textvariable=warn_msg, font=self.font_1, fg="red", bg='#ecffde')
+        warning_label.grid(row=row, column=col, pady=5, sticky="w")
         self.root.after(4000, lambda: warn_msg.set(""))
