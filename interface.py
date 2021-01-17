@@ -81,7 +81,7 @@ class Pysum(tk.Frame):
         tf_l3.grid(row=3, column=0, pady=3, columnspan=3, sticky="w")
 
         # ---
-        in_frame = ttk.LabelFrame(self.tool, text="Input", padding=50, relief=tk.RIDGE)
+        in_frame = ttk.LabelFrame(self.tool, text="Input", padding=20, relief=tk.RIDGE)
         in_frame.grid(row=1, column=0, sticky=tk.E + tk.W + tk.N + tk.S)
 
         self.tf_textin = tk.Text(in_frame, height=6, width=50)
@@ -165,7 +165,7 @@ class Pysum(tk.Frame):
         with open('README.md', 'r') as fh:
             about = fh.readlines()
 
-        ab_text = RichText(self.ab_frame)
+        ab_text = RichText(self.ab_frame, width=73, wrap=tk.WORD)
         ab_text.grid(row=0, column=0)
 
         for line in about:
@@ -192,7 +192,7 @@ class Pysum(tk.Frame):
                         self.images.append(photo)
                     except:
                         self.warn(mode='badinternet', label_loc=self.about, row=2, col=0)
-                    
+
                 else:
                     ab_text.insert('end', '\n[NOT RENDERED YET, click on above button!]\n\n')
 
@@ -249,7 +249,7 @@ class Pysum(tk.Frame):
         # first check xx_blosum value
         try:
             xx_number = int(xx_number)
-            if not xx_number in range(0, 101):
+            if not xx_number in range(1, 101):
                 self.warn(mode='xnumrange', label_loc=self.tool)
                 return False
         except:
@@ -275,7 +275,11 @@ class Pysum(tk.Frame):
                 dna_sequences.append(line)
 
         try:
-            self.matrix_result, self.matrix_labels = blosum(dna_sequences, xx_number)
+            matrix, lables = blosum(dna_sequences, xx_number)
+            if (matrix is None) and (labels is None):
+                return self.warn(mode='elimination', label_loc=self.tool)
+            else:
+                self.matrix_result, self.matrix_labels = matrix, lables
         except:
             self.warn(mode='something', line=i, label_loc=self.tool)
             return False
@@ -294,6 +298,8 @@ class Pysum(tk.Frame):
             warn_msg.set(f'[WARNING] BLOSUM Degree must be between 1-100!')
         elif mode == 'xnuminvalid':
             warn_msg.set(f'[WARNING] BLOSUM Degree must be a number!')
+        elif mode== 'elimination':
+            warn_msg.set(f'[WARNING] Only one Sequnce left after elimination!')
         elif mode == 'something':
             warn_msg.set(f'[WARNING] BLOSUM cant be computed with that sequences!')
         elif mode== 'badinternet':
