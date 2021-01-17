@@ -11,6 +11,6 @@ The sequences must be:
 
 You can also enter the sequences here (DNA or RNA or Proteins, everything...)
 
-Enter BLOSUM degree (number in between 0-100):
+Enter BLOSUM degree (number in between 1-100):
 
 LAST
