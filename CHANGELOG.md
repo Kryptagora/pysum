@@ -2,6 +2,13 @@
 All notable changes to this project will be documented in this file.
 
 ## [Released]
+## [1.2.1] - 2021-01-10
+### Changed
+- If all sequences are eliminated, the algorithm aborts.
+- Fixed degree hard coded into algorithm.
+- Small improvements to the GUI and its size.
+- BLOSUM range from 0-100 to 1-100.
+- Added text-wrapper in the about tab.
 
 ## [1.1.2] - 2021-01-10
 ### Changed
