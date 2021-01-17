@@ -5,7 +5,6 @@ import itertools
 #np.seterr(all='raise')
 
 def blosum(seq_array:list, xx_matrix:int):
-    xx_matrix = 0.85
 
     # elimination of similar sequnces
     for ignore_index, seq_1 in enumerate(seq_array):
@@ -16,6 +15,10 @@ def blosum(seq_array:list, xx_matrix:int):
             similarity = difflib.SequenceMatcher(None, seq_1, seq_2).ratio()
             if similarity > xx_matrix:
                 seq_array.pop(i)
+
+    # if only one sequnce left after elimination
+    if len(seq_array) == 1:
+        return None, None
 
     # array with len(seq_arrays) entrys and these entries are long as one arbitrary sequnce.
     array = np.empty(shape=(len(seq_array), len(seq_array[0])), dtype=np.str)
