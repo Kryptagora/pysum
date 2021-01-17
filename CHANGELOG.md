@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 
 ## [Released]
-## [1.2.1] - 2021-01-10
+## [1.2.1] - 2021-01-17
 ### Changed
 - If all sequences are eliminated, the algorithm aborts.
 - Fixed degree hard coded into algorithm.
