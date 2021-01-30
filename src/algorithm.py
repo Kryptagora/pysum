@@ -13,7 +13,7 @@ def blosum(seq_array:list, xx_matrix:int):
                 continue
 
             similarity = difflib.SequenceMatcher(None, seq_1, seq_2).ratio()
-            if similarity > xx_matrix:
+            if similarity > xx_matrix/100:
                 seq_array.pop(i)
 
     # if only one sequnce left after elimination
